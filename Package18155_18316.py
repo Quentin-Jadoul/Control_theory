@@ -24,19 +24,20 @@ def LeadLag_RT(MV, Kp, Tlead, Tlag, Ts, PV, PVinit=0, method='EBD'):
     The appended value is obtained from a recurrent equation that depends on the discretisation method.
     """    
     
-    if (Tlag != 0):
-        K = Ts/Tlag
-        if len(PV) == 0:
-            PV.append(PVinit)
-        else: # MV[k+1] is MV[-1] and MV[k] is MV[-2]
-            if method == 'EBD':
-                PV.append((1/(1+K))*PV[-1] + (K*Kp/(1+K))*((1+Tlead/Ts)*MV[0]-Tlead/Ts*PV[-1]))
-            elif method == 'EFD':
-                PV.append((1-K)*PV[-1] + K*Kp*(Tlead/Ts*MV[0]+(1-Tlead/Ts)*MV[-1]))
-            #elif method == 'TRAP':
-                #PV.append((1/(2*T+Ts))*((2*T-Ts)*PV[-1] + Kp*Ts*(MV[-1] + MV[-2])))            
-            else:
-                #EBD par defaut
-                PV.append((1/(1+K))*PV[-1] + (K*Kp/(1+K))*((1+Tlead/Ts)*MV[0]-Tlead/Ts*PV[-1]))
-    else:
-        PV.append(Kp*MV[-1])
+    if(t)
+    K = Ts/Tlag
+    if len(PV) == 0:
+        PV.append(PVinit)
+        print('x')
+    else: # MV[k+1] is MV[-1] and MV[k] is MV[-2]
+        
+        if method == 'EBD':
+            print('ok')
+            PV.append((1/(1+K))*PV[-1] + (K*Kp/(1+K))*((1+Tlead/Ts)*MV[-1]-Tlead/Ts*MV[-2]))
+        elif method == 'EFD':
+            PV.append((1-K)*PV[-1] + K*Kp*(Tlead/Ts*MV[0]+(1-Tlead/Ts)*MV[-1]))
+        #elif method == 'TRAP':
+            #PV.append((1/(2*T+Ts))*((2*T-Ts)*PV[-1] + Kp*Ts*(MV[-1] + MV[-2])))            
+        else:
+            #EBD par defaut
+            PV.append((1/(1+K))*PV[-1] + (K*Kp/(1+K))*((1+Tlead/Ts)*MV[0]-Tlead/Ts*PV[-1]))
