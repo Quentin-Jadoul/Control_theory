@@ -10,7 +10,8 @@ def LeadLag_RT(MV,Kp,T,Ts,PV,PVInit=0,method='EBD'):
     
     :MV: input vector
     :Kp: process gain
-    :T: lag time constant [s]
+    :Tlead: lead time constant [s]
+    :Tlag: lag time constant [s]
     :Ts: sampling period [s]
     :PV: output vector
     :PVInit: (optional: default value is 0)
