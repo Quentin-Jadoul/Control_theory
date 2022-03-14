@@ -3,6 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from IPython.display import display, clear_output
 
+#-----------------------------------
+
 def LeadLag_RT(MV, Kp, Tlead, Tlag, Ts, PV, PVinit=0, method='EBD'):
     
     """
@@ -40,3 +42,39 @@ def LeadLag_RT(MV, Kp, Tlead, Tlag, Ts, PV, PVinit=0, method='EBD'):
                 PV.append((1/(1+K))*PV[-1] + (K*Kp/(1+K))*((1+Tlead/Ts)*MV[0]-Tlead/Ts*PV[-1]))
     else:
         PV.append(Kp*MV[-1])
+
+#-----------------------------------
+
+def PID_RT(SP, PV, Man, MVMan, MVFF, Kc, Ti, Td, alpha, Ts, MVin, MVMax, MV, MVP, MVI, MVD, E, ManFF=False, PVInit=0, method='EBD-EBD'):
+    """
+    :SP: SP (or Setpoint) vector
+    :PV:
+    :Man:
+    :MVMan:
+    :MVFF:
+
+    :Kc:
+    :Ti:
+    :Td:
+    :alpha:
+    :Ts:
+
+    :MVMin:
+    :MVMax:
+
+    :MV:
+    :MVP:
+    :MVI:
+    :MVD:
+    :E:
+
+    :ManFF:
+    :PVInit:
+
+    :method:
+
+    The function "PID_RT" appends new values to the vectors "MV", "MVP, "MVI", and "MVD".
+    The appended values are based on the PID algorithm, the controller mode, and feedforward.
+    Nate that saturation of "MV" within the limits [MVMin MVMax] is implemented with anti wind-up
+    """
+    print('hello')
