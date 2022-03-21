@@ -33,15 +33,13 @@ def LeadLag_RT(MV, Kp, Tlead, Tlag, Ts, PV, PVinit=0, method='EBD'):
         
     else: # MV[k+1] is MV[-1] and MV[k] is MV[-2]
         if method == 'EBD':
-            
             PV.append((1/(1+K))*PV[-1] + (K*Kp/(1+K))*((1+(Tlead/Ts))*MV[-1]-(Tlead/Ts)*MV[-2]))
         elif method == 'EFD':
-            PV.append((1-K)*PV[-1] + K*Kp*(Tlead/Ts*MV[0]+(1-Tlead/Ts)*MV[-1]))
+            PV.append((1-K)*PV[-1] + K*Kp*((Tlead/Ts)*MV[-1]+(1-Tlead/Ts)*MV[-2]))
         #elif method == 'TRAP':
-            #PV.append((1/(2*T+Ts))*((2*T-Ts)*PV[-1] + Kp*Ts*(MV[-1] + MV[-2])))            
-        else:
-            #EBD par defaut
-            PV.append((1/(1+K))*PV[-1] + (K*Kp/(1+K))*((1+Tlead/Ts)*MV[0]-Tlead/Ts*PV[-1]))
+            #PV.append((1/(2*T+Ts))*((2*T-Ts)*PV[-1] + Kp*Ts*(MV[-1] + MV[-2])))
+        else: #EBD par défaut 
+            PV.append((1/(1+K))*PV[-1] + (K*Kp/(1+K))*((1+(Tlead/Ts))*MV[-1]-(Tlead/Ts)*MV[-2]))
 def PID_RT(SP,PV,Man, MVMan, MVFF,Kc,Ti,Td,alpha,Ts, MVMin, MVMax,MV,MVP,MVI,MVD,E, ManFF=False, PVInit=0, method='EBD-EBD'):
     """
     The function "PID_RT" needs to be included in a "for or while loop".
