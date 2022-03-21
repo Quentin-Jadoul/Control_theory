@@ -81,22 +81,19 @@ def PID_RT(SP,PV,Man, MVMan, MVFF,Kc,Ti,Td,alpha,Ts, MVMin, MVMax,MV,MVP,MVI,MVD
         MV=10
     elif Man == False:
         if method == 'EBD-EBD':
-            
-            
             E.append(SP[-1]-PV[-1])
-            if len(MVI)==0 and len(MVD)==0:
+            MVP.append(Kc*E[-1])
+            if len(MVI)==0 :
                 E.append(SP[-1]-PV[-1])
-                print(E)
-                MVP.append(Kc*E[-1])
+                
                 MVI.append((Kc*Ts/Ti)*E[-1])
-                MVD.append((Kc*Td/alpha*Td+Ts)*(E[-1]-E[-2]))
-
             else:
-                MVP.append(Kc*E[-1])
-                MVI.append(MVI[-2]+(Kc*Ts/Ti)*E[-1])
-                #Tfd =alpha*Td
-                MVD.append(((alpha*Td/alpha*Td+Ts)*MVD[-2])+((Kc*Td/alpha*Td+Ts)*(E[-1]-E[-2])))
-            MV.append(MVP+MVI+MVD)
+                MVI.append(MVI[-1]+(Kc*Ts/Ti)*E[-1])
+            if len(MVD)==0:
+                MVD.append((Kc*Td/alpha*Td+Ts)*(E[-1]-E[-2]))
+            else:
+                MVD.append(((alpha*Td/alpha*Td+Ts)*MVD[-1])+((Kc*Td/alpha*Td+Ts)*(E[-1]-E[-2])))
+            MV.append(MVP[-1]+MVI[-1]+MVD[-1])
     else:
         pass
             #elif method == 'EFD':
