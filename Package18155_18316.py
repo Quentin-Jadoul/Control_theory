@@ -104,3 +104,17 @@ def PID_RT(SP,PV,Man, MVMan, MVFF,Kc,Ti,Td,alpha,Ts, MVMin, MVMax,MV,MVP,MVI,MVD
                 #PV.append((1/(2*T+Ts))*((2*T-Ts)*PV[-1] + Kp*Ts*(MV[-1] + MV[-2])))            
     return 0
     
+def IMC_Tuning(K, Tlag1,Tlag2=0.0, theta=0.0, gamma=0.5, process='FOPDT_PI'):
+    """
+    This function computes the IMC PIC tuning parameters for FOPDT and SOPDT processes.
+    :K: process gain [/]
+    :Tlag1: First lag time constant [s]
+    :Tlag2: second lag timae constant[s] can be optional _default=0.0
+    :theta: delay[s] _default=0.0
+    :gamma:used to computed the desired closed-loop time constant TCLP[s] _default=0.5
+    :process: _default=FOPDT_PI: First Order Plus Dead Time for PI control (case G)
+
+
+    :return: Parameters of the PID controller : Kc, Ti, Td
+    """
+
