@@ -76,16 +76,25 @@ def PID_RT(SP,PV,Man, MVMan, MVFF,Kc,Ti,Td,alpha,Ts, MVMin, MVMax,MV,MVP,MVI,MVD
     The appended values are based on the PID algorithm, the controller mode, and feedforward.
     Note that saturation of "MV" within the limits [MVMin MVMax] is implemented with anti wind-up. 
     """ 
+    if len(PV)==0:
+        E.append(SP[-1]-PVInit)
+    else:
+        E.append(SP[-1]-PV[-1])
+    
+    if len(MVI)==0:
+        MVI.append((Kc*Ts/Ti)*E[-1])
 
-    if Man == True:
-        MV=10
+    if Man[-1] == True:
+        #Manual mode + anti wind-up
+        if ManFF:
+            MVI[-1]=MVMan[-1]-MVP[-1]-MVD[-1]
+        else:
+            MVI[-1]=MVMan[-1]-MVP[-1]-MVD[-1]-MVFF[-1]
     elif Man == False:
         if method == 'EBD-EBD':
-            E.append(SP[-1]-PV[-1])
+            #E.append(SP[-1]-PV[-1])
             MVP.append(Kc*E[-1])
             if len(MVI)==0 :
-                
-                
                 MVI.append((Kc*Ts/Ti)*E[-1])
             else:
                 MVI.append(MVI[-1]+(Kc*Ts/Ti)*E[-1])
@@ -104,7 +113,7 @@ def PID_RT(SP,PV,Man, MVMan, MVFF,Kc,Ti,Td,alpha,Ts, MVMin, MVMax,MV,MVP,MVI,MVD
                 #PV.append((1/(2*T+Ts))*((2*T-Ts)*PV[-1] + Kp*Ts*(MV[-1] + MV[-2])))            
     return 0
     
-def IMC_Tuning(K, Tlag1,Tlag2=0.0, theta=0.0, gamma=0.5, process='FOPDT_PI'):
+def IMC_Tuning(K, Tlag1,Tlag2=0.0, theta=0.0, gamma=0.5, process='FOPDT_PID'):
     """
     This function computes the IMC PIC tuning parameters for FOPDT and SOPDT processes.
     :K: process gain [/]
@@ -112,9 +121,25 @@ def IMC_Tuning(K, Tlag1,Tlag2=0.0, theta=0.0, gamma=0.5, process='FOPDT_PI'):
     :Tlag2: second lag timae constant[s] can be optional _default=0.0
     :theta: delay[s] _default=0.0
     :gamma:used to computed the desired closed-loop time constant TCLP[s] _default=0.5
-    :process: _default=FOPDT_PI: First Order Plus Dead Time for PI control (case G)
+    :process: _default=FOPDT_PID
+            FOPDT_PID: First Order Plus Dead Time for PID control (case H)
+            SOPDT_PID: Second Order Plus Dead Time for PID control (case I)
+
+
 
 
     :return: Parameters of the PID controller : Kc, Ti, Td
     """
+    Tc=gamma*Tlag1
+    if process=='FOPDT_PID':
+        Kc=((Tlag1+theta/2)/(Tc+theta/2))/K
+        Ti= Tlag1
+        Td=0
+    elif process=='SOPDT_PID':
+        Kc=(Tlag1+Tlag2/Tc+theta)/K
+        Ti=Tlag1+Tlag2
+        Td= (Tlag1*Tlag2-(Tlag1+Tlag2))/(Tlag1+Tlag2)
+    else:
+        print("choose method")
 
+    return Kc, Ti, Td
