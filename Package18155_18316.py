@@ -76,47 +76,40 @@ def PID_RT(SP,PV,Man, MVMan, MVFF,Kc,Ti,Td,alpha,Ts, MVMin, MVMax,MV,MVP,MVI,MVD
     The appended values are based on the PID algorithm, the controller mode, and feedforward.
     Note that saturation of "MV" within the limits [MVMin MVMax] is implemented with anti wind-up. 
     """ 
-    
-    if len(PV)==0:
+    if not PV:
         E.append(SP[-1]-PVInit)
     else:
         E.append(SP[-1]-PV[-1])
-    if len(MVP)==0:
-        MVP.append(Kc*(E[-1]))
-    if len(MVI)==0:
+    
+    if not MVI:
         MVI.append((Kc*Ts/Ti)*E[-1])
-    if len(MVD)==0:
+    else:
+        MVI.append(MVI[-1]+(Kc*Ts/Ti)*E[-1])
+    if not MVD:
         MVD.append((Kc*Td/alpha*Td+Ts)*(E[-1]))
-    #if len(MVMan)==0:
-     #   MVMan.append()
-    if Man[-1] == True:
-        #Manual mode + anti wind-up
+    else:
+        if len(E) == 1:
+            MVD.append(((alpha*Td/((alpha*Td)+Ts))*MVD[-1])+((Kc*Td/((alpha*Td)+Ts))*(E[-1])))
+        else:
+            MVD.append(((alpha*Td/((alpha*Td)+Ts))*MVD[-1])+((Kc*Td/((alpha*Td)+Ts))*(E[-1]-E[-2])))
+    MVP.append(Kc*E[-1])
+
+    
+    
+    
+
+    if Man[-1]:
         if ManFF:
             MVI[-1]=MVMan[-1]-MVP[-1]-MVD[-1]
         else:
-            MVI[-1]=MVMan[-1]-MVP[-1]-MVD[-1]-MVFF[-1]#bug
-    elif Man == False:
-        if method == 'EBD-EBD':
-            #E.append(SP[-1]-PV[-1])
-            MVP.append(Kc*E[-1])
-            if len(MVI)==0 :
-                MVI.append((Kc*Ts/Ti)*E[-1])
-            else:
-                MVI.append(MVI[-1]+(Kc*Ts/Ti)*E[-1])
-            if len(MVD)==0:
-                MVD.append((Kc*Td/alpha*Td+Ts)*(E[-1]))
-            else:
-                #Tfd=alpha*Td
-                MVD.append(((alpha*Td/((alpha*Td)+Ts))*MVD[-1])+((Kc*Td/((alpha*Td)+Ts))*(E[-1]-E[-2])))
-            MV.append(MVP[-1]+MVI[-1]+MVD[-1])
-    else:
-        pass
-            #elif method == 'EFD':
-                #NONE
-                #PV.append((1-K)*PV[-1] + K*Kp*(Tlead/Ts*MV[0]+(1-Tlead/Ts)*MV[-1]))
-            #elif method == 'TRAP':
-                #PV.append((1/(2*T+Ts))*((2*T-Ts)*PV[-1] + Kp*Ts*(MV[-1] + MV[-2])))            
-    return 0
+            MVI[-1]=MVMan[-1]-MVP[-1]-MVD[-1]-MVFF[-1]
+    
+    if MVP[-1]+MVI[-1]+MVD[-1]>MVMax:
+        MVI[-1]=MVMax-MVP[-1]-MVD[-1]-MVFF[1]
+    elif MVP[-1]+MVI[-1]+MVD[-1]<MVMin:
+        MVI[-1]=MVMin-MVP[-1]-MVD[-1]-MVFF[1]
+    
+    MV.append(MVP[-1]+MVI[-1]+MVD[-1]+MVFF[-1])
     
 def IMC_Tuning(K, Tlag1,Tlag2=0.0, theta=0.0, gamma=0.5, process='FOPDT_PID'):
     """
